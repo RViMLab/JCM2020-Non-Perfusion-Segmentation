@@ -8,6 +8,13 @@ from sklearn.metrics import precision_recall_fscore_support, roc_curve, auc, pre
 
 import matplotlib.pyplot as plt
 
+import cv2
+
+def normalize_sample(img, pixel_depth=255):
+    ori_data = np.float32(img)
+    ori_data = (ori_data - pixel_depth / 2) / pixel_depth
+    return ori_data
+
 def get_metrics(pred_folder, gt_folder, weights_folder, pixel_depth=255):
     print('Computing performance metrics...')
     precision_ar = []
@@ -76,6 +83,9 @@ def get_fold_scores(pred_folder, gt_folder, weights_folder, cv_folder=None, pixe
                 gt = (ndimage.imread(gt_path).astype(float))
                 pred = np.load(pred_path)
                 weight_img = (ndimage.imread(weight_path).astype(float))
+
+                # gt = cv2.imread(gt_path, cv2.IMREAD_GRAYSCALE)
+                # weight_img = cv2.imread(weight_path, cv2.IMREAD_GRAYSCALE)
 
                 pred_rs = pred.flatten()
                 gt_rs = (gt > (pixel_depth // 2)).astype(int).flatten()

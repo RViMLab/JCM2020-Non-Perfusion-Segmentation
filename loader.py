@@ -1,16 +1,10 @@
 import os
 import numpy as np
-from scipy import ndimage
 import tensorflow as tf
 
 import cv2
 
-import matplotlib.pyplot as plt
-
-def normalize_sample(img, pixel_depth=255):
-    ori_data = np.float32(img)
-    ori_data = (ori_data - pixel_depth / 2) / pixel_depth
-    return ori_data
+from util_ml import normalize_sample
 
 def add_metrics(tf_prediction, tf_ground_truth, weights=None,
                 threshold=0.5, network=None):  # NOTICE ORDER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
