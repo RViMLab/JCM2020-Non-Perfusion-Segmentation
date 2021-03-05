@@ -256,21 +256,11 @@ def crop_n_resize(img, crop_size, output_size, interpolation=tf.image.ResizeMeth
       
     return img_out
 
-# def gaussian_filter(std, size=None):
-#     if size=None:
-#         size = (3*std, 3*std)
-#     
-#     return filter
-
 def __get_sample_fa(features,
                  max_delta=0.1,
                  contrast_range=[0.8, 1.2],
                  shear_range=[-0.25, 0.25],
                  crop=[0.7, 1]):
-                # max_delta = 0.1,
-                # contrast_range = [0.8, 1.2],
-                # shear_range = [-0.25, 0.25],
-                # crop = [0.7, 1]):
     img_out = features['img']
     cnp_out = features['cnp']
     vld_out = features['vld']
@@ -317,9 +307,7 @@ def __get_sample_fa(features,
                             minval=shear_range[0], 
                             maxval=shear_range[1], 
                             dtype=tf.float32)
-#     rotation_angle = tf.constant(np.pi/4, dtype=tf.float32) 
-#     shx = tf.constant(-1, dtype=tf.float32)
-#     shy = tf.constant(0, dtype=tf.float32)
+
     feat_array = custom_transform(feat_array, shx, shy, rotation_angle, [input_width, input_height], 'BILINEAR')
 
     # Crop & resize
@@ -342,10 +330,6 @@ def __get_sample_fa(features,
     cnp_out = tf.clip_by_value(feat_array[:,:,1], clip_value_min=0, clip_value_max=1, name='augm_clip_cnp')
     vld_out = tf.clip_by_value(feat_array[:,:,2], clip_value_min=0, clip_value_max=1, name='augm_clip_vld')
     gth_out = tf.clip_by_value(feat_array[:,:,3], clip_value_min=0, clip_value_max=2, name='augm_clip_gth')
-    
-#     resized_data = cv2.addWeighted(resized_data, 4, cv2.GaussianBlur(resized_data ,(0, 0), 10), -4, 128)
-#     blurred = tf.nn.conv2d(img_out, gauss_kernel, strides=[1, 1, 1, 1], padding="SAME")
-#     resized_data = tf.add(tf.substract(4*resized_data, 4*blurred), 0.5)
     
     # img values back to [-0.5, 0.5]
     img_out = tf.subtract(img_out, cons_shift)    

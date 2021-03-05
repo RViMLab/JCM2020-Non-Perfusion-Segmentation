@@ -9,7 +9,6 @@ import random
 from skimage import transform
 from random import getrandbits
 from six.moves import cPickle as pickle
-# from skimage.transform import rescale, rotate
 
 import tensorflow as tf
 
@@ -59,7 +58,6 @@ class DataSet(object):
         else:
             try:
                 image_data = (ndimage.imread(src).astype(float))
-#                 image_copy = image_data.copy()
                 image_dims = len(image_data.shape)
                 if image_dims == 2:
                     image_gray = image_data.copy()
@@ -262,48 +260,6 @@ class DataSet(object):
             print('Removing cropped data folder:', dst)
             shutil.rmtree(dst)
         self.__recursive_img_crop(src, dst, height, width, ignore)
-
-    # def __recursive_img_padding(self, src, dst, height, width, ignore=None):
-    #     if os.path.isdir(src):
-    #         if not os.path.isdir(dst):
-    #             os.makedirs(dst)
-    #         files = os.listdir(src)
-    #         if ignore is not None:
-    #             ignored = ignore(src, files)
-    #         else:
-    #             ignored = set()
-    #         for f in files:
-    #             if f not in ignored:
-    #                 self.__recursive_img_crop(os.path.join(src, f),
-    #                                           os.path.join(dst, f),
-    #                                           height,
-    #                                           width,
-    #                                           ignore)
-    #     else:
-    #         try:
-    #             image_data = (ndimage.imread(src).astype(float))
-    #             image_copy = image_data.copy()
-    #             [iheight, iwidth] = image_data.shape
-    #             im_center_h = int(iheight / 2)
-    #             im_center_w = int(iwidth / 2)
-    #             # image_copy = image_copy[
-    #             #              im_center_h - int(height / 2):im_center_h + int(height / 2),
-    #             #              im_center_w - int(width / 2):im_center_w + int(width / 2)]
-    #             image_copy = np.pad(image_copy,)
-    #
-    #             sp.misc.toimage(image_copy, cmin=0.0, cmax=255).save(dst)
-    #         except IOError as e:
-    #             print('Could not read:\n', src, '\nError', e, '- Skipping file.')
-    #         # else:
-    #         #    shutil.copyfile(src, dst)
-    #
-    # def make_padding(self, src, dst, height, width, ignore=None):
-    #     print('Cropping data...')
-    #     self.crop_path = dst
-    #     if os.path.isdir(dst):
-    #         print('Removing padded data folder:', dst)
-    #         shutil.rmtree(dst)
-    #     self.__recursive_img_padding(src, dst, height, width, ignore)
             
     def __resize_data(self, src, dst, resize_height, resize_width, interpolation):
         '''
@@ -327,34 +283,9 @@ class DataSet(object):
                     image_ratio = resize_width/image_data.shape[1]
                 else:
                     image_ratio = resize_height/image_data.shape[0]
-#                 resized_data = sp.misc.imresize(image_data, image_ratio, interpolation)
-                resized_data = np.round(sktr.resize(image_data,[resize_height, resize_width])) 
-#                 print('image name', f)
-#                 print('image_data', np.unique(image_data))
-#                 imgplot = plt.imshow(image_data)
-#                 plt.show()
-#                 print('resized_data', np.unique(resized_data))
-#                 imgplot = plt.imshow(resized_data)
-#                 plt.show()
-#                 print('min', np.amin(image_data))
-#                 print('max', np.amax(image_data))
-#                 if preproc:
-#                     #resized_data = cv2.addWeighted(resized_data, 4, cv2.GaussianBlur(resized_data ,(0, 0), 10), -4, 128)
-#                     #resized_data = cv2.equalizeHist(resized_data)
-# #                     resized_data = 
-# #                     print('np.unique(resized_data)', np.unique(resized_data))
-# #                     print('type', resized_data.dtype)
-# #                     print('shape', resized_data.shape)
-#                     
-#                     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
-#                     resized_data = clahe.apply(resized_data.astype(np.uint8))
-#                     
-#                     print('np.unique(resized_data)', np.unique(resized_data))
-#                     print('type', resized_data.dtype)
-#                     print('shape', resized_data.shape)
+                resized_data = np.round(sktr.resize(image_data,[resize_height, resize_width]))
    
                 sp.misc.toimage(resized_data, cmin=0.0, cmax=255).save(file_dst)
-#                 sp.misc.toimage(resized_data).save(file_dst)
             except IOError as e:
                 print('Could not read:\n', file_src, '\nError', e, '- Skipping file.')
                 
@@ -369,12 +300,6 @@ class DataSet(object):
                            height, 
                            width, 
                            'bicubic')
-#         self.__resize_data(join(src, 'Done'), 
-#                            join(dst, 'Done_r'), 
-#                            height, 
-#                            width, 
-#                            'bicubic',
-#                            True)
         self.__resize_data(join(src, 'NP'), 
                            join(dst, 'NP'), 
                            height, 
@@ -401,13 +326,6 @@ class DataSet(object):
                 file_src = os.path.join(src, 'Done', f)
                 file_dst = os.path.join(src, dst_folder, f)
                 image_data = (ndimage.imread(file_src).astype(float))
-
-                #resized_data = cv2.addWeighted(resized_data, 4, cv2.GaussianBlur(resized_data ,(0, 0), 10), -4, 128)
-                #resized_data = cv2.equalizeHist(resized_data)
-#                     resized_data = 
-#                     print('np.unique(resized_data)', np.unique(resized_data))
-#                     print('type', resized_data.dtype)
-#                     print('shape', resized_data.shape)
                 
                 if mode=='clahe':
                     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
@@ -419,13 +337,8 @@ class DataSet(object):
                     preproc_data = resized_data = cv2.equalizeHist(image_data.astype(np.uint8))
                 else:
                     preproc_data = image_data
-                
-#                 print('np.unique(resized_data)', np.unique(preproc_data))
-#                 print('type', preproc_data.dtype)
-#                 print('shape', preproc_data.shape)
    
                 sp.misc.toimage(preproc_data, cmin=0.0, cmax=255).save(file_dst)
-#                 sp.misc.toimage(resized_data).save(file_dst)
             except IOError as e:
                 print('Could not read:\n', file_src, '\nError', e, '- Skipping file.')
                 
@@ -466,8 +379,6 @@ class DataSet(object):
                 print('Could not read:\n', img_path, '\nError', e, '- Skipping file.')  
         
     def split_data(self, src, dst, train_fraction, preproc_folder=None):
-#         if not os.path.isdir(dst):
-#             os.makedirs(dst)
         if os.path.isdir(dst):
             print('Removing existing train/test data:', dst)
             shutil.rmtree(dst)
@@ -500,8 +411,6 @@ class DataSet(object):
 
 
     def crossval(self, src, dst, kfolds, preproc_folder=None):
-        #         if not os.path.isdir(dst):
-        #             os.makedirs(dst)
         if os.path.isdir(dst):
             print('Removing existing cross-validation data:', dst)
             shutil.rmtree(dst)
@@ -516,8 +425,6 @@ class DataSet(object):
         files_idx = range(len(files))
 
         for kk in range(kfolds):
-            # fold_files = [i for i in sorted(random.sample(files), k=fold_nfiles)]
-            # files = [value for value in files if value not in fold_files]
             print(kk)
             fold_idx = [i for i in sorted(random.sample(files_idx, k=fold_nfiles))]
             files_idx = [value for value in files_idx if value not in fold_idx]
@@ -545,13 +452,12 @@ class DataSet(object):
         image_files.sort()
         type(pixel_depth)
         for image_name in image_files:
-            print(image_name) #######
+            print(image_name)
             image_path = join(src_folder, image_name)
             try:
                 if mode == 'data':
                     image_data = (ndimage.imread(image_path).astype(float) - 
                                   pixel_depth / 2) / pixel_depth
-#                     print('np.unique(image_data)', np.unique(image_data))#############################################
                 elif mode == 'labels':
                     image_data = ndimage.imread(image_path).astype(float) / pixel_depth
                     image_data = image_data==1
@@ -615,34 +521,10 @@ class DataSet(object):
     
     def normalize_sample(self, img, pixel_depth=255, weight_map=None):
         ori_data = np.float32(img)
-        # ori_data_old = (ori_data - pixel_depth / 2) / pixel_depth
-        # ori_data_old2 = ori_data / pixel_depth
         if weight_map is not None:
             ori_data_masked = ori_data * (weight_map / np.max(weight_map))
             ori_data_norm = (ori_data - np.mean(ori_data_masked)) / (2*pixel_depth)
 
-            # ori_data_norm2_part = (ori_data - np.mean(ori_data_masked)) / np.std(ori_data_masked)
-            # ori_data_norm2_part2 = np.clip(ori_data_norm2_part, -1.0, 1.0)
-            # ori_data_norm2 = (ori_data_norm2_part2 + 1) / 2
-            #
-            # plt.imshow(ori_data, vmin=0, vmax=255)
-            # plt.show()
-            # plt.imshow(ori_data_old, vmin=0, vmax=1)
-            # plt.show()
-            # plt.imshow(ori_data_old2, vmin=0, vmax=1)
-            # plt.show()
-            # plt.imshow(ori_data_masked, vmin=0, vmax=1)
-            # plt.show()
-            # plt.imshow(ori_data_norm, vmin=0, vmax=1)
-            # plt.show()
-            # plt.imshow(ori_data_norm)
-            # plt.show()
-            # plt.imshow(ori_data_norm2_part, vmin=0, vmax=1)
-            # plt.show()
-            # plt.imshow(ori_data_norm2_part2, vmin=0, vmax=1)
-            # plt.show()
-            # plt.imshow(ori_data_norm2, vmin=0, vmax=1)
-            # plt.show()
         else:
             ori_data_norm = (ori_data - np.mean(ori_data)) / pixel_depth
         return ori_data_norm
@@ -670,18 +552,10 @@ class DataSet(object):
                 ori_path = os.path.join(data_path, 'Done', image_name)
                 cnp_path = os.path.join(data_path, 'NP', image_name)
                 vld_path = os.path.join(data_path, 'Valid', image_name)
-                
-    #             ori_data = ndimage.imread(ori_path).astype(float)
-    #             cnp_data = ndimage.imread(cnp_path).astype(float)
-    #             vld_data = ndimage.imread(vld_path).astype(float)
+
                 ori_data = mpimg.imread(ori_path)
                 cnp_data = mpimg.imread(cnp_path)
                 vld_data = mpimg.imread(vld_path)
-                
-#                 print('np.unique(ori_data)', np.unique(ori_data))#############################################
-                
-#                 print("type(cnp_data)", type(cnp_data[1,1]))
-#                 print("cnp_data.shape", type(cnp_data.shape))
                 
                 height = ori_data.shape[0]
                 width = ori_data.shape[1]
@@ -693,11 +567,6 @@ class DataSet(object):
                 ori_data = (ori_data - pixel_depth / 2) / pixel_depth
                 cnp_data = np.float32(cnp_data>0.5)
                 vld_data = np.float32(vld_data>0.5)
-                
-#                 print('np.unique(ori_data)', np.unique(ori_data))#############################################
-                
-#                 print("type(cnp_data) 222", type(cnp_data[1,1]))
-#                 print("cnp_data.shape 222", type(ori_data.shape))
                 
                 gth_data = self.get_ground_truth(cnp_data, vld_data)
     
@@ -785,10 +654,6 @@ class DataSet(object):
         else:
             print('Warning: No images available to save on TFrecord')
             return None
-        
-#     def write_tfrecord(self):
-        
-#     def write_pickle(self):
 
     def load_pickle(self, data_path):
         file_ori = os.path.join(data_path, 'Done.pickle') 
