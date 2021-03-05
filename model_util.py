@@ -13,11 +13,6 @@ def variable_summaries(name, var):
     tf.summary.scalar(name + '_stddev', stddev)
     tf.summary.scalar(name + '_max', tf.reduce_max(var))
     tf.summary.scalar(name + '_min', tf.reduce_min(var))
-
-#         for ii in range(np.amin([var.shape[-1], 5])):
-#         tf.summary.image(name +'_image' + str(ii), 
-#                          var[...,ii], 
-#                          max_outputs=np.amin([var.shape[-1], 5]))
     tf.summary.histogram(name + '_histogram', var)
     
 def gradient_summaries(loss, num_layers=10):
@@ -34,12 +29,6 @@ def gradient_summaries(loss, num_layers=10):
 # def trainable_model(batch_data, batch_labels):
 def trainable_model(loss, algorithm):
     print("Setting up trainable model...")
-    
-#     # Loss
-#     loss = generalised_dice_loss(batch_data,
-#                                  batch_labels)#,
-#     tf.summary.scalar('loss', loss)
-#     loss = tf.Print(loss, [loss], 'loss') #print to the console
 
     global_step = tf.Variable(0, trainable=False)
     learning_rate = tf.train.exponential_decay(
@@ -76,47 +65,4 @@ def trainable_model(loss, algorithm):
         
     return optimize, gradients, variables
 
-def trainable_model_DEPR(loss):
-    print("Setting up trainable model...")
-    
-#     # Loss
-#     loss = generalised_dice_loss(batch_data,
-#                                  batch_labels)#,
-#     tf.summary.scalar('loss', loss)
-#     loss = tf.Print(loss, [loss], 'loss') #print to the console
-
-    global_step = tf.Variable(0, trainable=False)
-    learning_rate = tf.train.exponential_decay(
-        param.start_learning_rate, 
-        global_step,
-        param.learning_decay_step, 
-        param.learning_decay_rate,
-        staircase=param.staircase)
-#             learning_rate = start_learning_rate
-    tf.summary.scalar('learning_rate', learning_rate)
-
-#     optimizer = tf.train.MomentumOptimizer(
-#         learning_rate=learning_rate, 
-#         momentum=momentum).minimize(loss, global_step=global_step)
-    optimizer = tf.train.MomentumOptimizer(
-        learning_rate=learning_rate, 
-        momentum=param.momentum)
-    optimizer_train = optimizer.minimize(loss, global_step=global_step)
-#     grads = optimizer.compute_gradients(loss)
-#     for index, grad in enumerate(gradients):
-#         tf.summary.histogram("{}-grad".format(grads[index][1].name), grads[index])
-    
-    gradients, variables = zip(*optimizer.compute_gradients(loss))
-#     print(len(variables))
-#     print(variables[0])
-    grad_checks = [tf.check_numerics(grad, 'Gradients exploding') for grad in gradients if grad is not None]
-    with tf.control_dependencies(grad_checks):
-        optimize = optimizer.apply_gradients(zip(gradients, variables))
-    
-#     for index, grad in enumerate(gradients):
-#         tf.summary.histogram("{}-grad".format(gradients[index][1].name), gradients[index])
-#     for index, grad in enumerate(grad_checks):
-#         tf.summary.histogram("{}-grad_checks".format(grad_checks[index][1].name), grad_checks[index])
-        
-    return optimizer_train
 
