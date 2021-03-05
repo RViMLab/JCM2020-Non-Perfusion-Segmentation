@@ -64,9 +64,9 @@ model_save_step = 1000
 
 ##################################################
 # inference
-inf_model_folder = r'./models/out1'
-inf_out_folder = r'./out/out1'
-inf_cv_folder = '../exp_cnptool/cnp_data/cnpdata6b_cv5/fold1/Done'  # to know images in fold
+inf_model_folder = r'./models/out0'
+inf_out_folder = r'./out/out0'
+inf_cv_folder = '../exp_cnptool/cnp_data/cnpdata6b_cv5/fold0/Done'  # to know images in fold
 inf_data_folder = r'../exp_cnptool/cnp_data/facnp8/Done'
 
 # inf_model_folder = r'/raid/jamseth/root_dev/exp_cnptool/pych_cnptool_baseline/pych_cnptool_f4/out/out4/Model'
@@ -76,11 +76,17 @@ inf_data_folder = r'../exp_cnptool/cnp_data/facnp8/Done'
 
 ##################################################
 # metrics
-pred_folder = r'/raid/jamseth/root_dev/exp_cnptool/pych_cnptool_baseline'#/pych_cnptool_f0/out/out0/auto_rev/ch1'
-gt_folder = r'../cnp_data/facnp8/NP'
-weights_folder = r'../cnp_data/facnp8/Valid'
-cv_folder = '../cnp_data/cnpdata6b_cv5'#/fold0/Done' # to know images in fold
 
+# get_metric_roc_fold (--roc 1)
+# pred_folder = r'/raid/jamseth/root_dev/exp_cnptool/pych_cnptool_baseline'
+# gt_folder = r'../exp_cnptool/cnp_data/facnp8/NP'
+# weights_folder = r'../exp_cnptool/cnp_data/facnp8/Valid'
+# cv_folder = '../exp_cnptool/cnp_data/cnpdata6b_cv5'  # to know images in fold
+
+# get_metrics (--roc 0)
+pred_folder = r'./out/out0/ch1_bin'
+gt_folder = r'../exp_cnptool/cnp_data/facnp8/NP'
+weights_folder = r'../exp_cnptool/cnp_data/facnp8/Valid'
 
 
 

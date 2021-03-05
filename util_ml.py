@@ -31,9 +31,13 @@ def get_metrics(pred_folder, gt_folder, weights_folder, pixel_depth=255):
                 gt_path = os.path.join(os.path.join(gt_folder), f)
                 weight_path = os.path.join(os.path.join(weights_folder), filename + '.png') # valid
                 pred_path = os.path.join(os.path.join(pred_folder), filename + '.png')
-                gt = (ndimage.imread(gt_path).astype(float))
-                pred = (ndimage.imread(pred_path).astype(float))
-                weight_img = (ndimage.imread(weight_path).astype(float))
+                # gt = (ndimage.imread(gt_path).astype(float))
+                # pred = (ndimage.imread(pred_path).astype(float))
+                # weight_img = (ndimage.imread(weight_path).astype(float))
+
+                gt = cv2.imread(gt_path, cv2.IMREAD_GRAYSCALE)
+                pred = cv2.imread(pred_path, cv2.IMREAD_GRAYSCALE)
+                weight_img = cv2.imread(weight_path, cv2.IMREAD_GRAYSCALE)
 
                 pred_rs = (pred.flatten() / pixel_depth).astype(int)
                 gt_rs = (gt > (pixel_depth // 2)).astype(int).flatten()
@@ -80,12 +84,10 @@ def get_fold_scores(pred_folder, gt_folder, weights_folder, cv_folder=None, pixe
                 gt_path = os.path.join(os.path.join(gt_folder), f)
                 weight_path = os.path.join(os.path.join(weights_folder), filename + '.png')  # valid
                 pred_path = os.path.join(os.path.join(pred_folder), filename + '.npy')
-                gt = (ndimage.imread(gt_path).astype(float))
                 pred = np.load(pred_path)
-                weight_img = (ndimage.imread(weight_path).astype(float))
 
-                # gt = cv2.imread(gt_path, cv2.IMREAD_GRAYSCALE)
-                # weight_img = cv2.imread(weight_path, cv2.IMREAD_GRAYSCALE)
+                gt = cv2.imread(gt_path, cv2.IMREAD_GRAYSCALE)
+                weight_img = cv2.imread(weight_path, cv2.IMREAD_GRAYSCALE)
 
                 pred_rs = pred.flatten()
                 gt_rs = (gt > (pixel_depth // 2)).astype(int).flatten()
@@ -246,6 +248,3 @@ def get_metrics_roc_fold(pred_folder, gt_folder, weights_folder, cv_folder=None,
         plt.legend(loc='best')
         plt.show()
 
-        print('auc:', auc_ar)
-        print('mean:', np.mean(auc_ar))
-        print('std:', np.std(auc_ar))
