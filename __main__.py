@@ -11,6 +11,8 @@ from loader import inference
 
 from util_ml import get_metrics, get_metrics_roc_fold
 
+import argparse
+
 def get_available_gpus():
     local_device_protos = device_lib.list_local_devices()
     return [x.name for x in local_device_protos if x.device_type == 'GPU']
@@ -80,8 +82,8 @@ def format_data(data_path, data_folder, kfolds=0):
     print('split_path', cv_path)
     for kk in range(kfolds):
         print(kfolds, 'cross-validation. Fold ', kk)
-        tfrec_train = dataset.write_tfrecord(cv_path, 'fold' + str(kk)) # TODO check when tfrec_valid is None as it meant No images available to save on TFrecord
-        # tfrec_valid = dataset.write_tfrecord(split_path, 'test')
+        # TODO check when tfrec_valid is None as it meant No images available to save on TFrecord
+        dataset.write_tfrecord(cv_path, 'fold' + str(kk))
 
     # print("OUT format_data")
     return cv_path#, tfrec_train, tfrec_valid
@@ -97,8 +99,8 @@ def format_data_cv(data_path, data_folder, kfolds=0):
     print('split_path', cv_path)
     for kk in range(kfolds):
         print(kfolds, 'cross-validation. Fold ', kk)
-        tfrec_train = dataset.write_tfrecord(cv_path, 'fold' + str(kk)) # TODO check when tfrec_valid is None as it meant No images available to save on TFrecord
-        # tfrec_valid = dataset.write_tfrecord(split_path, 'test')
+        # check when tfrec_valid is None as it meant No images available to save on TFrecord
+        dataset.write_tfrecord(cv_path, 'fold' + str(kk))
 
     # print("OUT format_data")
     return cv_path#, tfrec_train, tfrec_valid
@@ -129,22 +131,11 @@ def has_valid_data(data_path, tfrec_valid):
     return os.path.isfile(os.path.join(data_path, tfrec_valid))
 
 
-def train(network, train_batch_size, train_data_folder, kcrossval):#, premodel_path=None):
+def train(train_batch_size, train_data_folder, kcrossval):#, premodel_path=None):
     print("Training...")
-    # if has_valid_data(train_data_folder, tfrec_valid):
-    #     trainer = Trainer(network,
-    #                       param.train_batch_size,
-    #                       join(train_data_folder, tfrec_train),
-    #                       param.valid_batch_size,
-    #                       join(train_data_folder, tfrec_valid))
-    # else:
-
-    # NO VALIDATION
-    trainer = Trainer(network,
-                      train_batch_size,
+    trainer = Trainer(train_batch_size,
                       train_data_folder,
-                      kcrossval)#,
-                      #premodel_path)
+                      kcrossval)
     trainer.train_model()
     print("Training finished.")
 
@@ -167,8 +158,13 @@ def main():
     wellcome()
     set_visible_gpus(param.gpu_list)
 
-    # mode = 'unet'
-    if param.mode == 'train':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-m', '--mode', type=str, default='c',
+                        help='Select mode [train, inference, metrics], e.g. '
+                             'python main.py --mode train')
+    args = parser.parse_args()
+
+    if args.mode == 'train':
         # Format data and train model   
         if param.preproc_path is '':
             data_path = format_data(param.data_path, param.data_folder, param.kcrossval)
@@ -178,13 +174,13 @@ def main():
             tfrec_train = 'train_data.tfrecords'
             tfrec_valid = 'test_data.tfrecords'
 
-        train(param.network, param.train_batch_size, data_path, param.kcrossval)  # , param.model_path)
+        train(param.train_batch_size, data_path, param.kcrossval)
 
-    elif param.mode == 'inference':
+    elif args.mode == 'inference':
         # Predict        
         predict(param)
-    elif param.mode == 'metrics':
-        # Performance assessment
+    elif args.mode == 'metrics':
+        # Performance
         metrics(param, True)
     
 if __name__ == '__main__':
