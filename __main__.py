@@ -162,7 +162,11 @@ def main():
     parser.add_argument('-m', '--mode', type=str, default='train',
                         help='Select mode: train, inference, metrics [default: train], e.g. '
                              'python main.py --mode train')
+    parser.add_argument('-r', '--roc', type=int, default=1,
+                        help='In metrics mode select ROC [True] or numerical [False] [default: True], e.g. '
+                             'python main.py --mode metrics --roc 1')
     args = parser.parse_args()
+    assert args.roc == 0 or args.roc == 1, "--roc must be 0 or 1."
 
     if args.mode == 'train':
         # Format data and train model   
@@ -181,7 +185,7 @@ def main():
         predict(param)
     elif args.mode == 'metrics':
         # Performance
-        metrics(param, True)
+        metrics(param, bool(args.roc))
     
 if __name__ == '__main__':
     main()
