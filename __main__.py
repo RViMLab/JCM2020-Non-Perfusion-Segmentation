@@ -159,8 +159,8 @@ def main():
     set_visible_gpus(param.gpu_list)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-m', '--mode', type=str, default='c',
-                        help='Select mode [train, inference, metrics], e.g. '
+    parser.add_argument('-m', '--mode', type=str, default='train',
+                        help='Select mode: train, inference, metrics [default: train], e.g. '
                              'python main.py --mode train')
     args = parser.parse_args()
 
